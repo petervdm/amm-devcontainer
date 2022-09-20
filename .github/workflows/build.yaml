@@ -20,8 +20,8 @@ jobs:
           set -e
 
           # Update this based on your image name and the path of the .devcontainer folder in your repository
-          FOLDER_WITH_DOT_DEVCONTAINER="api"
-          IMAGE_NAME="api-devcontainer"
+          FOLDER_WITH_DOT_DEVCONTAINER="amm"
+          IMAGE_NAME="amm-devcontainer"
           IMAGE_REPOSITORY="$(echo "ghcr.io/${{ github.repository_owner }}/${IMAGE_NAME}" | tr '[:upper:]' '[:lower:]')"
 
           # [Optional] Enable buildkit, set output to plain text for logging

@@ -1,0 +1,37 @@
+name: Generate Dev Container Images
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 1 * *'
+  push:
+    branches:
+      - 'main'
+    paths:
+      - '*/.devcontainer/**/*'
+permissions:
+  contents: read
+  packages: write
+jobs:
+  website:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: |
+          set -e
+
+          # Update this based on your image name and the path of the .devcontainer folder in your repository
+          FOLDER_WITH_DOT_DEVCONTAINER="api"
+          IMAGE_NAME="api-devcontainer"
+          IMAGE_REPOSITORY="$(echo "ghcr.io/${{ github.repository_owner }}/${IMAGE_NAME}" | tr '[:upper:]' '[:lower:]')"
+
+          # [Optional] Enable buildkit, set output to plain text for logging
+          export DOCKER_BUILDKIT=1
+          export BUILDKIT_PROGRESS=plain
+
+          # Do the build - update
+          npm install -g "@vscode/dev-container-cli@0.232.3"
+          devcontainer build --no-cache --image-name "${IMAGE_REPOSITORY}" "${FOLDER_WITH_DOT_DEVCONTAINER}"
+
+          # Push image to GitHub Container Registry
+          echo "${{ github.token }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+          docker push "${IMAGE_REPOSITORY}"
